@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Informatics Daily Task Tracker 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0f1c2e; --navy-mid: #1a2e45; --navy-light: #243b55;
+  --accent: #00d4aa; --accent2: #ff6b6b; --accent3: #ffd93d;
+  --text: #e8f0fe; --text-muted: #8ba3c1;
+  --janhavi: #4fc3f7;   --janhavi-bg: rgba(79,195,247,0.07);
+  --abisheik: #81c784;  --abisheik-bg: rgba(129,199,132,0.07);
+  --ritika: #ffb74d;    --ritika-bg: rgba(255,183,77,0.07);
+  --shawani: #f48fb1;   --shawani-bg: rgba(244,143,177,0.07);
+  --holiday-bg: rgba(255,107,107,0.10);
+  --optional-bg: rgba(255,217,61,0.08);
+  --border: rgba(255,255,255,0.07);
+  --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Outfit', sans-serif; background: var(--navy); color: var(--text); min-height: 100vh; }
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at 15% 10%, rgba(0,212,170,0.07) 0%, transparent 50%),
+              radial-gradient(ellipse at 85% 90%, rgba(79,195,247,0.05) 0%, transparent 50%);
+}
+.container { position: relative; z-index: 1; padding: 20px 24px; }
+
+header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--accent), #4fc3f7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+h1 { font-size: 22px; font-weight: 700; background: linear-gradient(90deg, #fff 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { padding: 8px 16px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.18s; border: none; }
+.btn-accent { background: var(--accent); color: var(--navy); }
+.btn-accent:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-outline { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+.month-tabs { display: flex; gap: 5px; flex-wrap: wrap; background: var(--navy-mid); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px; margin-bottom: 14px; }
+.month-tab { padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--text-muted); transition: all 0.18s; font-family: 'Outfit', sans-serif; }
+.month-tab:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.month-tab.active { background: var(--accent); color: var(--navy); font-weight: 700; }
+
+.legend { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 9px 14px; background: var(--navy-mid); border: 1px solid var(--border); border-radius: var(--radius); font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+.member-chips { display: flex; gap: 7px; margin-bottom: 12px; flex-wrap: wrap; }
+.chip { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: all 0.18s; }
+.chip.all      { border-color: var(--accent);   color: var(--accent);   } .chip.all.active      { background: var(--accent);   color: var(--navy); }
+.chip.janhavi  { border-color: var(--janhavi);  color: var(--janhavi);  } .chip.janhavi.active  { background: var(--janhavi);  color: var(--navy); }
+.chip.abisheik { border-color: var(--abisheik); color: var(--abisheik); } .chip.abisheik.active { background: var(--abisheik); color: var(--navy); }
+.chip.ritika   { border-color: var(--ritika);   color: var(--ritika);   } .chip.ritika.active   { background: var(--ritika);   color: var(--navy); }
+.chip.shawani  { border-color: var(--shawani);  color: var(--shawani);  } .chip.shawani.active  { background: var(--shawani);  color: var(--navy); }
+
+.month-summary { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+.summary-chip { padding: 4px 11px; border-radius: 20px; background: var(--navy-mid); border: 1px solid var(--border); }
+.summary-chip span { color: var(--text); font-weight: 600; }
+
+.table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 16px 50px rgba(0,0,0,0.4); }
+.table-wrap::-webkit-scrollbar { height: 6px; }
+.table-wrap::-webkit-scrollbar-track { background: var(--navy-mid); }
+.table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+table { border-collapse: collapse; width: 100%; min-width: 900px; font-size: 12px; }
+
+thead th { position: sticky; top: 0; z-index: 10; }
+.sticky-date { position: sticky; left: 0; z-index: 5; min-width: 78px; }
+.sticky-day  { position: sticky; left: 79px; z-index: 5; min-width: 115px; }
+thead .sticky-date, thead .sticky-day { z-index: 15; }
+
+.th-top { background: var(--navy-light); color: var(--text); padding: 10px 8px; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 2px solid var(--accent); white-space: nowrap; }
+.th-member { text-align: center; padding: 8px 6px; font-size: 13px; font-weight: 700; border-bottom: 1px solid var(--border); }
+.th-member.janhavi  { background: rgba(79,195,247,0.13);  color: var(--janhavi); border-right: 2px solid rgba(79,195,247,0.2); }
+.th-member.abisheik { background: rgba(129,199,132,0.13); color: var(--abisheik); border-right: 2px solid rgba(129,199,132,0.2); }
+.th-member.ritika   { background: rgba(255,183,77,0.13);  color: var(--ritika); border-right: 2px solid rgba(255,183,77,0.2); }
+.th-member.shawani  { background: rgba(244,143,177,0.13); color: var(--shawani); border-right: 2px solid rgba(244,143,177,0.2); }
+.th-sub { text-align: center; padding: 5px 4px; font-size: 10px; font-weight: 500; color: var(--text-muted); white-space: nowrap; border-bottom: 1px solid var(--border); background: var(--navy-light); }
+
+td.td-date {
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 600;
+  color: var(--text-muted); background: var(--navy-mid);
+  vertical-align: middle; padding: 0 8px; white-space: nowrap;
+  border-bottom: 2px solid rgba(255,255,255,0.08); text-align: center;
+}
+td.td-day {
+  font-size: 11px; font-weight: 500; background: var(--navy-mid);
+  vertical-align: middle; padding: 6px 8px;
+  border-bottom: 2px solid rgba(255,255,255,0.08);
+}
+tr.task-row td { padding: 4px 5px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+tr.task-row.day-last-row td { border-bottom: 2px solid rgba(255,255,255,0.1); }
+
+.cell-janhavi  { background: var(--janhavi-bg); }
+.cell-abisheik { background: var(--abisheik-bg); }
+.cell-ritika   { background: var(--ritika-bg); }
+.cell-shawani  { background: var(--shawani-bg); }
+
+.mem-border-janhavi  { border-right: 2px solid rgba(79,195,247,0.15) !important; }
+.mem-border-abisheik { border-right: 2px solid rgba(129,199,132,0.15) !important; }
+.mem-border-ritika   { border-right: 2px solid rgba(255,183,77,0.15) !important; }
+.mem-border-shawani  { border-right: 2px solid rgba(244,143,177,0.15) !important; }
+
+.day-holiday  td { background: var(--holiday-bg) !important; }
+.day-optional td { background: var(--optional-bg) !important; }
+.day-weekend  td { opacity: 0.42; }
+
+.row-badge { font-size: 9px; padding: 2px 5px; border-radius: 4px; font-weight: 700; margin-left: 4px; vertical-align: middle; }
+.badge-weekend  { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+.badge-holiday  { background: rgba(255,107,107,0.22); color: var(--accent2); }
+.badge-optional { background: rgba(255,217,61,0.18);  color: var(--accent3); }
+
+.task-num { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-muted); padding: 1px 4px; background: rgba(255,255,255,0.06); border-radius: 3px; }
+
+.editable { outline: none; cursor: text; border-radius: 4px; padding: 2px 4px; transition: box-shadow 0.15s, background 0.15s; display: block; }
+.editable:focus { background: rgba(0,212,170,0.08); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.editable.ph { color: rgba(139,163,193,0.28); font-style: italic; }
+
+.date-wrap { display: flex; align-items: center; min-width: 105px; }
+.date-input { width: 100%; background: transparent; border: 1px solid transparent; border-radius: 6px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 11px; padding: 3px 20px 3px 5px; cursor: pointer; outline: none; transition: border-color 0.15s; -webkit-appearance: none; appearance: none; color-scheme: dark; }
+.date-input:hover { border-color: rgba(0,212,170,0.3); }
+.date-input:focus { border-color: var(--accent); background: rgba(0,212,170,0.07); }
+.date-input.filled { color: var(--accent); font-weight: 500; }
+.date-input::-webkit-calendar-picker-indicator { filter: invert(0.6) sepia(1) saturate(3) hue-rotate(130deg); cursor: pointer; opacity: 0.7; width: 13px; height: 13px; }
+.date-input::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+.status-sel { width: 100%; padding: 3px 18px 3px 5px; background: var(--navy-light); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 11px; font-family: 'Outfit', sans-serif; cursor: pointer; outline: none; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238ba3c1'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 4px center; min-width: 102px; }
+.status-sel:focus { border-color: var(--accent); }
+.status-sel option { background: #1a2e45; }
+.status-sel[data-v="Completed"]   { color: #81c784; border-color: rgba(129,199,132,0.35); }
+.status-sel[data-v="In Progress"] { color: #4fc3f7; border-color: rgba(79,195,247,0.35); }
+.status-sel[data-v="Blocked"]     { color: #ff6b6b; border-color: rgba(255,107,107,0.35); }
+.status-sel[data-v="On Hold"]     { color: #ffd93d; border-color: rgba(255,217,61,0.35); }
+
+.add-btn { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 5px; font-size: 10px; font-weight: 700; cursor: pointer; border: 1px dashed; background: transparent; font-family: 'Outfit', sans-serif; transition: all 0.15s; white-space: nowrap; opacity: 0.65; }
+.add-btn:hover { opacity: 1; transform: scale(1.05); }
+.del-btn { width: 17px; height: 17px; border-radius: 4px; border: none; background: rgba(255,107,107,0.14); color: var(--accent2); font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s; padding: 0; line-height: 1; vertical-align: middle; margin-left: 3px; }
+.del-btn:hover { background: rgba(255,107,107,0.32); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📋</div>
+      <div>
+        <h1>Lab Informatics Task Tracker</h1>
+        <div class="subtitle">Daily activity log · May – December 2026 · Excelra</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" onclick="clearMonthData()">🗑 Clear Month</button>
+      <button class="btn btn-accent"  onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
+  </header>
+
+  <div class="month-tabs" id="monthTabs"></div>
+
+  <div class="legend">
+    <strong style="color:var(--text)">Legend:</strong>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.3)"></div>Working day</div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.12)"></div>Weekend</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>Public Holiday</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div>Optional Holiday</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--janhavi)"></div>Janhavi</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--abisheik)"></div>Abisheik</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ritika)"></div>Ritika</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--shawani)"></div>Shawani</div>
+    <div class="legend-item" style="margin-left:6px; color:var(--accent)">＋ task = add another task row for that person on that day</div>
+  </div>
+
+  <div class="member-chips">
+    <div class="chip all active"  onclick="filterMembers('all')">All Members</div>
+    <div class="chip janhavi"     onclick="filterMembers('janhavi')">Janhavi</div>
+    <div class="chip abisheik"    onclick="filterMembers('abisheik')">Abisheik</div>
+    <div class="chip ritika"      onclick="filterMembers('ritika')">Ritika</div>
+    <div class="chip shawani"     onclick="filterMembers('shawani')">Shawani</div>
+  </div>
+
+  <div id="monthSummary" class="month-summary"></div>
+
+  <div class="table-wrap">
+    <table id="tracker">
+      <thead id="tHead"></thead>
+      <tbody id="tBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const MEMBERS = [
+  { key:'janhavi',  name:'Janhavi',  color:'#4fc3f7' },
+  { key:'abisheik', name:'Abisheik', color:'#81c784' },
+  { key:'ritika',   name:'Ritika',   color:'#ffb74d' },
+  { key:'shawani',  name:'Shawani',  color:'#f48fb1' },
+];
+const HOLIDAYS = {
+  '2026-05-27':{name:'Eidul Azha (Bakrid)',opt:true},
+  '2026-06-02':{name:'Telangana Formation Day',opt:false},
+  '2026-08-10':{name:'Bonalu',opt:true},
+  '2026-08-15':{name:'Independence Day',opt:false},
+  '2026-09-04':{name:'Sri Krishna Astami',opt:true},
+  '2026-09-14':{name:'Vinayak Chavithi',opt:false},
+  '2026-10-02':{name:'Gandhi Jayanti',opt:false},
+  '2026-10-20':{name:'Vijaya Dasami / Dushera',opt:false},
+  '2026-11-08':{name:'Deepavali',opt:false},
+  '2026-11-09':{name:'Day after Deepavali',opt:true},
+  '2026-11-24':{name:'Kartika Purnima / Guru Nanak J.',opt:true},
+  '2026-12-25':{name:'Christmas',opt:false},
+};
+const MONTHS=[{m:5,name:'May',days:31},{m:6,name:'Jun',days:30},{m:7,name:'Jul',days:31},{m:8,name:'Aug',days:31},{m:9,name:'Sep',days:30},{m:10,name:'Oct',days:31},{m:11,name:'Nov',days:30},{m:12,name:'Dec',days:31}];
+const MOS=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const STATUSES=['','Not Started','In Progress','Completed','Blocked','On Hold'];
+const FIELDS=['task','start','expend','actend','status','comment'];
+
+let DATA=JSON.parse(localStorage.getItem('lab_tracker_v3')||'{}');
+function save(){localStorage.setItem('lab_tracker_v3',JSON.stringify(DATA));}
+function pad(n){return String(n).padStart(2,'0');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtD(iso){if(!iso)return'';const[y,mo,d]=iso.split('-');return`${d}-${MOS[+mo]}-${y}`;}
+
+// Storage helpers
+function cntKey(dk,mk){return`${dk}|${mk}|count`;}
+function fKey(dk,mk,ti,f){return`${dk}|${mk}|${ti}|${f}`;}
+function getCount(dk,mk){return Math.max(1,parseInt(DATA[cntKey(dk,mk)]||'1'));}
+function setCount(dk,mk,n){DATA[cntKey(dk,mk)]=String(Math.max(1,n));save();}
+function getF(dk,mk,ti,f){return DATA[fKey(dk,mk,ti,f)]||'';}
+function setF(dk,mk,ti,f,v){DATA[fKey(dk,mk,ti,f)]=v;save();}
+
+let curMonth=0, curFilter='all';
+
+function getDays(mi){
+  const{m,days}=MONTHS[mi];
+  const start=m===5?20:1;
+  return Array.from({length:days-start+1},(_,i)=>{
+    const d=start+i, dt=new Date(2026,m-1,d), dow=dt.getDay();
+    const dk=`2026-${pad(m)}-${pad(d)}`, hol=HOLIDAYS[dk]||null;
+    return{d,m,dk,dayName:DOW[dow],dow,isWeekend:dow===0||dow===6,
+           isHoliday:!!hol&&!hol.opt,isOptional:!!hol&&hol.opt,holName:hol?hol.name:null};
+  });
+}
+function visibleMembers(){return curFilter==='all'?MEMBERS:MEMBERS.filter(m=>m.key===curFilter);}
+
+function renderTable(){
+  const days=getDays(curMonth), vis=visibleMembers(), {name}=MONTHS[curMonth];
+  const working=days.filter(d=>!d.isWeekend&&!d.isHoliday).length;
+  document.getElementById('monthSummary').innerHTML=`
+    <div class="summary-chip">📅 <span>${name} 2026</span></div>
+    <div class="summary-chip">✅ <span>${working}</span> working days</div>
+    <div class="summary-chip">🏖 <span>${days.filter(d=>d.isWeekend).length}</span> weekends</div>
+    <div class="summary-chip">🎉 <span>${days.filter(d=>d.isHoliday||d.isOptional).length}</span> holidays</div>`;
+
+  // ── Header ──
+  const SUBCOLS=['#','Task / Activity','Start Date','Exp. End Date','Actual End Date','EOD Status','Comments',''];
+  const SUBW=[22,138,106,106,110,102,122,48];
+  document.getElementById('tHead').innerHTML=`
+    <tr>
+      <th class="th-top sticky-date" rowspan="2">Date</th>
+      <th class="th-top sticky-day"  rowspan="2">Day</th>
+      ${vis.map(m=>`<th class="th-member ${m.key}" colspan="${SUBCOLS.length}">${m.name}</th>`).join('')}
+    </tr>
+    <tr>${vis.map(m=>SUBCOLS.map((s,si)=>`<th class="th-sub" style="min-width:${SUBW[si]}px">${s}</th>`).join('')).join('')}</tr>`;
+
+  // ── Body ──
+  const tbody=document.getElementById('tBody');
+  tbody.innerHTML='';
+
+  days.forEach(day=>{
+    const{dk,dayName,isWeekend,isHoliday,isOptional,holName,m}=day;
+    const disabled=isWeekend||isHoliday;
+    const rowClass=isWeekend?'day-weekend':isHoliday?'day-holiday':isOptional?'day-optional':'';
+    const badge=isWeekend?`<span class="row-badge badge-weekend">WKD</span>`:isHoliday?`<span class="row-badge badge-holiday">HOLIDAY</span>`:isOptional?`<span class="row-badge badge-optional">OPT</span>`:'';
+    const dayLabel=(isHoliday||isOptional)?`${dayName} — ${holName}${badge}`:`${dayName}${badge}`;
+
+    // Max task rows needed across all visible members
+    const counts=disabled?[1]:vis.map(mem=>getCount(dk,mem.key));
+    const maxRows=Math.max(...counts);
+
+    for(let ti=0;ti<maxRows;ti++){
+      const tr=document.createElement('tr');
+      tr.className=`task-row ${rowClass}${ti===maxRows-1?' day-last-row':''}`;
+
+      // Date + Day cells only on first row, span all rows
+      if(ti===0){
+        const tdD=document.createElement('td');
+        tdD.className='td-date sticky-date'; tdD.rowSpan=maxRows;
+        tdD.textContent=`${pad(day.d)} ${MOS[m]}`;
+        tr.appendChild(tdD);
+        const tdY=document.createElement('td');
+        tdY.className='td-day sticky-day'; tdY.rowSpan=maxRows;
+        tdY.innerHTML=dayLabel;
+        tr.appendChild(tdY);
+      }
+
+      // Member columns
+      vis.forEach((mem,mi)=>{
+        const isLastMem=mi===vis.length-1;
+        const borderClass=`mem-border-${mem.key}`;
+        const memCount=disabled?1:getCount(dk,mem.key);
+
+        if(disabled){
+          // Weekend/holiday: single dash cell spanning all subcols
+          const td=document.createElement('td');
+          td.className=`cell-${mem.key} ${borderClass}`;
+          td.colSpan=SUBCOLS.length;
+          td.style.cssText='text-align:center;color:rgba(139,163,193,0.2);font-size:11px;';
+          if(ti===0)td.textContent='—';
+          tr.appendChild(td);
+          return;
+        }
+
+        if(ti<memCount){
+          // ── Active task row ──
+          // Col 0: task number badge
+          const tdN=document.createElement('td');
+          tdN.className=`cell-${mem.key}`;
+          tdN.style.cssText='text-align:center;padding:3px;';
+          if(memCount>1)tdN.innerHTML=`<span class="task-num">T${ti+1}</span>`;
+          tr.appendChild(tdN);
+
+          // Col 1: Task/Activity
+          const tdT=document.createElement('td');
+          tdT.className=`cell-${mem.key}`;
+          tdT.style.minWidth='138px';
+          tdT.innerHTML=mkEdit(dk,mem.key,ti,'task','Enter task…');
+          tr.appendChild(tdT);
+
+          // Cols 2-4: Date inputs
+          ['start','expend','actend'].forEach(f=>{
+            const td=document.createElement('td');
+            td.className=`cell-${mem.key}`;
+            td.innerHTML=mkDate(dk,mem.key,ti,f);
+            tr.appendChild(td);
+          });
+
+          // Col 5: Status
+          const tdS=document.createElement('td');
+          tdS.className=`cell-${mem.key}`;
+          tdS.style.padding='3px 4px';
+          tdS.innerHTML=mkStatus(dk,mem.key,ti);
+          tr.appendChild(tdS);
+
+          // Col 6: Comments
+          const tdC=document.createElement('td');
+          tdC.className=`cell-${mem.key}`;
+          tdC.style.minWidth='122px';
+          tdC.innerHTML=mkEdit(dk,mem.key,ti,'comment','Add comment…');
+          tr.appendChild(tdC);
+
+          // Col 7: Actions (add + delete)
+          const tdA=document.createElement('td');
+          tdA.className=`cell-${mem.key} ${borderClass}`;
+          tdA.style.cssText='padding:3px 4px;white-space:nowrap;text-align:center;';
+          let aHtml='';
+          if(ti===memCount-1){
+            aHtml+=`<button class="add-btn" style="border-color:${mem.color};color:${mem.color}" onclick="addTask('${dk}','${mem.key}')">＋ task</button>`;
+          }
+          if(memCount>1){
+            aHtml+=`<button class="del-btn" title="Remove task ${ti+1}" onclick="removeTask('${dk}','${mem.key}',${ti})">×</button>`;
+          }
+          tdA.innerHTML=aHtml;
+          tr.appendChild(tdA);
+
+        } else if(ti===memCount){
+          // Row right after this member's last task → show add button
+          const td=document.createElement('td');
+          td.className=`cell-${mem.key} ${borderClass}`;
+          td.colSpan=SUBCOLS.length;
+          td.style.cssText='text-align:center;padding:3px 5px;';
+          td.innerHTML=`<button class="add-btn" style="border-color:${mem.color};color:${mem.color}" onclick="addTask('${dk}','${mem.key}')">＋ task</button>`;
+          tr.appendChild(td);
+        } else {
+          // Empty spacer cell
+          const td=document.createElement('td');
+          td.className=`cell-${mem.key} ${borderClass}`;
+          td.colSpan=SUBCOLS.length;
+          tr.appendChild(td);
+        }
+      });
+      tbody.appendChild(tr);
+    }
+  });
+}
+
+function mkEdit(dk,mk,ti,f,ph){
+  const v=getF(dk,mk,ti,f);
+  const empty=!v;
+  return`<div contenteditable="true" class="editable${empty?' ph':''}"
+    data-dk="${dk}" data-mk="${mk}" data-ti="${ti}" data-f="${f}" data-ph="${ph}"
+    onfocus="eFocus(this)" onblur="eBlur(this)">${empty?ph:esc(v)}</div>`;
+}
+function mkDate(dk,mk,ti,f){
+  const v=getF(dk,mk,ti,f);
+  return`<div class="date-wrap"><input type="date" class="date-input${v?' filled':''}"
+    value="${v}" data-dk="${dk}" data-mk="${mk}" data-ti="${ti}" data-f="${f}"
+    onchange="dChange(this)"></div>`;
+}
+function mkStatus(dk,mk,ti){
+  const v=getF(dk,mk,ti,'status');
+  return`<select class="status-sel" data-v="${v}"
+    data-dk="${dk}" data-mk="${mk}" data-ti="${ti}"
+    onchange="sChange(this)">
+    ${STATUSES.map(s=>`<option value="${s}"${v===s?' selected':''}>${s||'— Status —'}</option>`).join('')}
+  </select>`;
+}
+
+function eFocus(el){if(el.classList.contains('ph')){el.textContent='';el.classList.remove('ph');}}
+function eBlur(el){
+  const v=el.innerText.trim();
+  if(!v||v===el.dataset.ph){setF(el.dataset.dk,el.dataset.mk,+el.dataset.ti,el.dataset.f,'');el.textContent=el.dataset.ph;el.classList.add('ph');}
+  else{setF(el.dataset.dk,el.dataset.mk,+el.dataset.ti,el.dataset.f,v);el.classList.remove('ph');}
+}
+function dChange(el){setF(el.dataset.dk,el.dataset.mk,+el.dataset.ti,el.dataset.f,el.value);el.classList.toggle('filled',!!el.value);}
+function sChange(el){setF(el.dataset.dk,el.dataset.mk,+el.dataset.ti,'status',el.value);el.dataset.v=el.value;}
+
+function addTask(dk,mk){setCount(dk,mk,getCount(dk,mk)+1);renderTable();}
+function removeTask(dk,mk,ti){
+  const n=getCount(dk,mk);
+  for(let i=ti;i<n-1;i++)FIELDS.forEach(f=>{DATA[fKey(dk,mk,i,f)]=DATA[fKey(dk,mk,i+1,f)]||'';});
+  FIELDS.forEach(f=>delete DATA[fKey(dk,mk,n-1,f)]);
+  setCount(dk,mk,n-1);renderTable();
+}
+
+function renderMonthTabs(){
+  document.getElementById('monthTabs').innerHTML=MONTHS.map((mo,i)=>
+    `<button class="month-tab ${i===0?'active':''}" onclick="switchMonth(${i})">${mo.name}</button>`
+  ).join('');
+}
+function switchMonth(i){curMonth=i;document.querySelectorAll('.month-tab').forEach((t,j)=>t.classList.toggle('active',j===i));renderTable();}
+function filterMembers(k){curFilter=k;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));document.querySelector(`.chip.${k}`).classList.add('active');renderTable();}
+
+function clearMonthData(){
+  const{name}=MONTHS[curMonth];
+  if(!confirm(`Clear ALL data for ${name} 2026?`))return;
+  getDays(curMonth).forEach(day=>MEMBERS.forEach(mem=>{
+    const n=getCount(day.dk,mem.key);
+    for(let ti=0;ti<n;ti++)FIELDS.forEach(f=>delete DATA[fKey(day.dk,mem.key,ti,f)]);
+    delete DATA[cntKey(day.dk,mem.key)];
+  }));
+  save();renderTable();
+}
+
+function exportCSV(){
+  const days=getDays(curMonth),{name}=MONTHS[curMonth];
+  const headers=['Date','Day','Member','Task #','Task/Activity','Start Date','Exp End Date','Actual End Date','EOD Status','Comments'];
+  const rows=[];
+  days.filter(d=>!d.isWeekend&&!d.isHoliday).forEach(day=>{
+    MEMBERS.forEach(mem=>{
+      const n=getCount(day.dk,mem.key);
+      for(let ti=0;ti<n;ti++){
+        rows.push([fmtD(`2026-${pad(day.m)}-${pad(day.d)}`),day.dayName,mem.name,`T${ti+1}`,
+          getF(day.dk,mem.key,ti,'task'),fmtD(getF(day.dk,mem.key,ti,'start')),
+          fmtD(getF(day.dk,mem.key,ti,'expend')),fmtD(getF(day.dk,mem.key,ti,'actend')),
+          getF(day.dk,mem.key,ti,'status'),getF(day.dk,mem.key,ti,'comment')]);
+      }
+    });
+  });
+  const csv=[headers,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`task_tracker_${name}_2026.csv`;a.click();
+}
+
+renderMonthTabs();renderTable();
+</script>
+</body>
+</html>
